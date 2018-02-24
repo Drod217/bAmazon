@@ -1,28 +1,27 @@
-// allows users to create and bid on assorted items, tasks, jobs, or projects
 var mysql = require("mysql");
 var inquirer = require('inquirer');
 
-// establish connection
+//  connection
 var connection = mysql.createConnection({
     host: "localhost",
     port: 3306,
 
-    // Your username
+    // Username
     user: "root",
 
-    // Your password
+    // Password
     password: "root",
     database: "bamazon"
 });
 
 connection.connect(function (err) {
     if (err) throw err;
-    //console.log("connected as id " + connection.threadId);
-    displayProducts();
+    // runs function after connection or error
+    products();
 });
 
-//function that displays all product information
-function displayProducts() {
+// product information
+function products() {
     connection.query("SELECT * FROM products", function (err, res) {
         if (err) {
             console.log(err);
@@ -32,13 +31,13 @@ function displayProducts() {
                 console.log(res[i].item_id + " : " + res[i].product_name + ", " + res[i].price);
             }
             console.log("-----------------------------------");
-            promptCustomer();
+            prompt();
         }
     });
 };
 
-//function that prompts customers on what to buy
-function promptCustomer() {
+// using inquirer prompts customer from selection choice
+function prompt() {
     connection.query("SELECT * FROM products", function (err, res) {
         if (err) console.log(err);
 
@@ -49,7 +48,7 @@ function promptCustomer() {
             },
             {
                 type: "input",
-                message: "How many units of the product are you interested in?",
+                message: "How many?",
                 name: "quantity",
             },
         ]).then(function (answer) {
@@ -85,9 +84,9 @@ function promptCustomer() {
                             var totalPrice = chosenProduct.price * parseInt(answer.quantity);
                             console.log("\n")
                             console.log("--------------------------------------------------");
-                            console.log("Your total is be: " + totalPrice);
+                            console.log("Your total is: " + totalPrice);
                             console.log("Thank you for your purchase!");
-                            console.log("We now only have " + quantityUpdate + " left!");
+                            console.log("We now only have " + quantityUpdate);
                             console.log("--------------------------------------------------");
                             console.log("\n")
                             connection.end();
